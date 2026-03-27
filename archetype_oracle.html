@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>元型占い — ARCHETYPE ORACLE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0b14;
+  --bg2:#13111f;
+  --bg3:#1a1729;
+  --border:#2a2640;
+  --border2:#3a3560;
+  --text:#ede9ff;
+  --text2:#a09ccc;
+  --text3:#6b6899;
+  --accent:#9b8bff;
+  --accent2:#c4b8ff;
+  --gold:#d4a017;
+  --gold-bg:#2a2210;
+  --green:#5dcaa5;
+  --green-bg:#0d2a22;
+  --red:#e05555;
+  --red-bg:#2a1010;
+  --warn-border:#e8a87c;
+  --warn-bg:#1f1408;
+  --good-border:#5dcaa5;
+  --good-bg:#0a2018;
+  --great-border:#9b8bff;
+  --great-bg:#110f2a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:16px;line-height:1.6}
+body{min-height:100vh;background:var(--bg);background-image:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(100,80,200,.15),transparent);padding-bottom:4rem}
+
+/* ヘッダー */
+.header{text-align:center;padding:3rem 1.5rem 2rem;max-width:640px;margin:0 auto}
+.header-tag{font-size:10px;font-weight:500;letter-spacing:.3em;color:var(--text3);margin-bottom:1rem;text-transform:uppercase}
+.header-title{font-family:'Noto Serif JP',serif;font-size:clamp(22px,5vw,34px);font-weight:700;color:var(--text);line-height:1.35;margin-bottom:1rem}
+.header-title em{color:var(--accent2);font-style:normal}
+.header-divider{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:.75rem auto}
+.header-body{font-size:13px;color:var(--text2);line-height:1.95;margin-bottom:1.25rem}
+.header-note{font-size:11px;color:var(--text3);line-height:1.7;padding:10px 14px;background:rgba(155,139,255,.06);border-radius:8px;border:0.5px solid rgba(155,139,255,.2);text-align:left}
+
+/* 入力フォーム */
+.form-wrap{max-width:640px;margin:0 auto;padding:0 1.5rem 2rem}
+.form-row{display:flex;gap:8px;margin-bottom:6px;align-items:flex-end;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:11px;color:var(--text3);letter-spacing:.06em}
+.fg input,.fg select{height:42px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);padding:0 12px;font-size:14px;font-family:'Noto Sans JP',sans-serif;outline:none;transition:border .2s}
+.fg input:focus,.fg select:focus{border-color:var(--accent)}
+.fg select option{background:var(--bg2)}
+#yr{width:92px}#mo{width:76px}#dy{width:70px}
+.btn-go{height:42px;padding:0 22px;border:0.5px solid var(--accent);border-radius:8px;background:rgba(155,139,255,.12);color:var(--accent2);font-size:14px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.06em;transition:background .2s,color .2s}
+.btn-go:hover{background:rgba(155,139,255,.22);color:#fff}
+.input-note{font-size:11px;color:var(--text3);margin-top:2px;letter-spacing:.04em}
+.err{color:#ff7070;font-size:13px;margin:.5rem 0}
+
+/* 結果エリア */
+.result{max-width:640px;margin:0 auto;padding:0 1.5rem}
+
+/* シーズンチップ */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.chip{padding:3px 12px;border-radius:20px;font-size:11px;font-weight:500;letter-spacing:.04em;border:0.5px solid}
+.spring{background:rgba(94,200,120,.1);color:#5ec878;border-color:rgba(94,200,120,.3)}
+.summer{background:rgba(220,130,80,.1);color:#dc8250;border-color:rgba(220,130,80,.3)}
+.autumn{background:rgba(200,160,60,.1);color:#c8a03c;border-color:rgba(200,160,60,.3)}
+.winter{background:rgba(80,140,220,.1);color:#508cdc;border-color:rgba(80,140,220,.3)}
+
+/* 3カード */
+.cards3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.25rem}
+.ac{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:12px}
+.acl{font-size:10px;color:var(--text3);margin-bottom:6px;letter-spacing:.06em}
+.ace{font-size:22px;display:block;margin-bottom:3px}
+.ac-domain{display:inline-block;font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;margin-bottom:5px;letter-spacing:.04em}
+.acn{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;font-family:'Noto Serif JP',serif}
+.acn2{font-size:10px;color:var(--text3)}
+
+/* バナー */
+.day-banner{border-radius:14px;padding:16px 18px;margin-bottom:1rem;display:flex;align-items:flex-start;gap:14px}
+.day-banner.great{background:var(--great-bg);border:0.5px solid var(--great-border)}
+.day-banner.good{background:var(--good-bg);border:0.5px solid var(--good-border)}
+.day-banner.warn{background:var(--warn-bg);border:0.5px solid var(--warn-border)}
+.db-icon{font-size:28px;flex-shrink:0;margin-top:2px}
+.db-tag{font-size:10px;font-weight:500;letter-spacing:.1em;margin-bottom:5px}
+.day-banner.great .db-tag{color:var(--accent2)}
+.day-banner.good .db-tag{color:var(--green)}
+.day-banner.warn .db-tag{color:#e8a87c}
+.db-title{font-size:15px;font-weight:500;margin-bottom:8px;line-height:1.5;font-family:'Noto Serif JP',serif}
+.day-banner.great .db-title{color:#d4cfff}
+.day-banner.good .db-title{color:#a8f0da}
+.day-banner.warn .db-title{color:#f0d0a8}
+.db-body{font-size:13px;line-height:1.95}
+.day-banner.great .db-body{color:#a09ccc}
+.day-banner.good .db-body{color:#7dbfa0}
+.day-banner.warn .db-body{color:#c09878}
+
+/* 4領域グリッド */
+.dgrid{display:grid;grid-template-columns:1fr 1fr;background:var(--bg2);border-radius:12px;border:0.5px solid var(--border);margin-bottom:1rem;overflow:hidden}
+.di{padding:13px 14px;border-right:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.di:nth-child(2n){border-right:none}
+.di:nth-last-child(-n+2){border-bottom:none}
+.di-l{font-size:10px;font-weight:500;color:var(--text3);margin-bottom:6px;letter-spacing:.06em}
+
+/* 注意日 */
+.di-bad-label{font-size:9px;font-weight:500;color:#e06060;margin-bottom:3px;letter-spacing:.06em}
+.di-bad{font-size:12px;color:#e08080;line-height:1.5;font-weight:500;margin-bottom:2px}
+.di-bad-sub{font-size:11px;color:#b06060;line-height:1.4;margin-bottom:6px}
+.di-arr{font-size:10px;color:var(--text3);margin:4px 0;display:flex;align-items:center;gap:6px}
+.di-arr::before,.di-arr::after{content:'';display:block;height:0.5px;flex:1;background:var(--border)}
+.di-good-label{font-size:9px;font-weight:500;color:#5dcaa5;margin-bottom:3px;letter-spacing:.06em}
+.di-good{font-size:12px;color:#7de0bc;line-height:1.5;font-weight:500}
+.di-good-sub{font-size:11px;color:#5aaf8c;line-height:1.4;margin-top:2px}
+
+/* 吉日最小/最大 */
+.di-min-label{font-size:9px;font-weight:500;color:#c8a03c;margin-bottom:3px;letter-spacing:.06em}
+.di-min{font-size:12px;color:#d4b060;line-height:1.5;font-weight:500;margin-bottom:2px}
+.di-min-sub{font-size:11px;color:#a07830;line-height:1.4;margin-bottom:6px}
+.di-max-label{font-size:9px;font-weight:500;color:#5dcaa5;margin-bottom:3px;letter-spacing:.06em}
+.di-max{font-size:12px;color:#7de0bc;line-height:1.5;font-weight:500}
+.di-max-sub{font-size:11px;color:#5aaf8c;line-height:1.4;margin-top:2px}
+
+/* チューニングバー */
+.tune-bar{background:rgba(155,139,255,.08);border:0.5px solid rgba(155,139,255,.25);padding:12px 16px;border-radius:10px;display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.tune-bar p{font-size:12px;color:var(--accent2);flex:1;line-height:1.6;font-weight:500}
+.tune-btn{height:32px;padding:0 14px;border:0.5px solid var(--accent);border-radius:6px;background:rgba(155,139,255,.15);color:var(--accent2);font-size:12px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;white-space:nowrap;letter-spacing:.04em;transition:background .2s}
+.tune-btn:hover{background:rgba(155,139,255,.3)}
+
+/* CTA */
+.yt-btn{display:flex;align-items:center;gap:12px;background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:12px 16px;text-decoration:none;margin-bottom:.75rem;cursor:pointer;transition:border-color .2s,background .2s}
+.yt-btn:hover{background:var(--bg3);border-color:var(--border2)}
+.yt-ic{width:40px;height:40px;border-radius:8px;background:rgba(255,50,50,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.yt-info .tag{font-size:10px;font-weight:500;color:#ff5555;margin-bottom:3px;letter-spacing:.06em}
+.yt-info .ttl{font-size:13px;font-weight:500;color:var(--text)}
+.yt-info .stl{font-size:11px;color:var(--text3)}
+.ln-btn{display:flex;align-items:center;gap:12px;background:#06C755;border-radius:12px;padding:12px 16px;text-decoration:none;margin-bottom:.75rem;cursor:pointer;transition:opacity .2s}
+.ln-btn:hover{opacity:.9}
+.ln-ic{width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ln-info .tag{font-size:10px;color:rgba(255,255,255,.7);margin-bottom:3px;letter-spacing:.06em}
+.ln-info .ttl{font-size:13px;font-weight:500;color:#fff}
+.mail-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:12px 16px}
+.mail-box p{font-size:12px;color:var(--text3);margin-bottom:8px}
+.mrow{display:flex;gap:8px}
+.mrow input{flex:1;height:36px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg3);color:var(--text);padding:0 10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;outline:none}
+.mrow input:focus{border-color:var(--accent)}
+.mrow button{height:36px;padding:0 14px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:12px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.04em;transition:opacity .2s}
+.mrow button:hover{opacity:.85}
+.mok{font-size:12px;color:var(--green);margin-top:6px;display:none}
+
+.hidden{display:none}
+
+/* ===== URL設定（管理者） ===== */
+.admin-toggle{font-size:11px;color:var(--text3);cursor:pointer;text-decoration:underline;display:inline-block;margin-top:1.5rem;letter-spacing:.04em}
+.admin-panel{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-top:.75rem}
+.admin-panel h3{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:1rem;letter-spacing:.06em}
+.af{display:flex;flex-direction:column;gap:4px;margin-bottom:.875rem}
+.af label{font-size:11px;color:var(--text3)}
+.af input{height:34px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text);padding:0 10px;font-size:12px;font-family:'Noto Sans JP',sans-serif;outline:none}
+.af input:focus{border-color:var(--accent)}
+.asave{height:32px;padding:0 14px;border:0.5px solid var(--accent);border-radius:6px;background:rgba(155,139,255,.12);color:var(--accent2);font-size:12px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.04em}
+.asave:hover{background:rgba(155,139,255,.25)}
+
+@media(max-width:480px){
+ .cards3{grid-template-columns:1fr 1fr 1fr}
+ .acn{font-size:12px}
+ .form-row{flex-wrap:wrap}
+ #yr{width:80px}#mo{width:70px}#dy{width:62px}
+}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="header">
+  <div class="header-tag">Archetype Oracle</div>
+  <div class="header-title">あなたの<em>元型</em>は、<br>今日の運命を知っている。</div>
+  <div class="header-divider"></div>
+  <div class="header-body">
+    ユング心理学が発見した「元型」とは、人間の無意識の奥底に宿る12の根源的な力のこと。<br>
+    あなたが生まれた日、宇宙のパターンの中にあなた固有の元型が刻まれた。<br><br>
+    その元型は毎日、今日という日の流れと交差する。<br>
+    その交差点を知ることで——今日の痛みを避け、今日の奇跡を受け取ることができる。
+  </div>
+  <div class="header-note">⚠ 鑑定を受けた人の多くが「なぜこんなに当たるのか」と言葉を失います。覚悟して受けてください。</div>
+</div>
+
+<!-- 入力フォーム -->
+<div class="form-wrap">
+  <div class="form-row">
+    <div class="fg"><label>生まれ年</label><input id="yr" type="number" min="1927" max="2025" placeholder="1985"></div>
+    <div class="fg"><label>月</label>
+      <select id="mo">
+        <option value="">月</option>
+        <option>1</option><option>2</option><option>3</option><option>4</option>
+        <option>5</option><option>6</option><option>7</option><option>8</option>
+        <option>9</option><option>10</option><option>11</option><option>12</option>
+      </select>
+    </div>
+    <div class="fg"><label>日</label><input id="dy" type="number" min="1" max="31" placeholder="15"></div>
+    <button class="btn-go" onclick="go()">元型を鑑定する</button>
+  </div>
+  <div class="input-note">生年月日から「本質の元型」×「今日の元型」×「今月の元型」の3層で霊視します</div>
+  <div id="err" class="err hidden"></div>
+</div>
+
+<!-- 結果 -->
+<div class="result hidden" id="res">
+  <div class="chips" id="chips"></div>
+  <div class="cards3">
+    <div class="ac"><div class="acl">本質の元型</div><span class="ace" id="be"></span><div class="ac-domain" id="b-domain"></div><div class="acn" id="bn"></div><div class="acn2" id="bcn"></div></div>
+    <div class="ac"><div class="acl">今日の元型</div><span class="ace" id="te"></span><div class="ac-domain" id="t-domain"></div><div class="acn" id="tn"></div><div class="acn2" id="tcn"></div></div>
+    <div class="ac"><div class="acl">今月の元型</div><span class="ace" id="me"></span><div class="ac-domain" id="m-domain"></div><div class="acn" id="mn"></div><div class="acn2" id="mcn"></div></div>
+  </div>
+  <div class="day-banner" id="day-banner">
+    <div class="db-icon" id="db-icon"></div>
+    <div style="flex:1">
+      <div class="db-tag" id="db-tag"></div>
+      <div class="db-title" id="db-title"></div>
+      <div class="db-body" id="db-body"></div>
+    </div>
+  </div>
+  <div class="dgrid" id="dg"></div>
+  <div class="tune-bar"><p id="tp"></p><button class="tune-btn" onclick="scrollYt()">今すぐ整える →</button></div>
+  <a id="yt-a" href="https://youtube.com/@yourchannel" target="_blank" class="yt-btn">
+    <div class="yt-ic">📺</div>
+    <div class="yt-info"><div class="tag">▶ YOUTUBE 毎日配信</div><div class="ttl" id="yt-ttl">10分チューニング動画</div><div class="stl">元型の力を整える | 毎日更新</div></div>
+  </a>
+  <a id="ln-a" href="https://lin.ee/xxxxxxx" target="_blank" class="ln-btn">
+    <div class="ln-ic">💬</div>
+    <div class="ln-info"><div class="tag">LINE 毎朝9時に自動配信</div><div class="ttl">今日の元型鑑定が毎朝届く</div></div>
+  </a>
+  <div class="mail-box">
+    <p>📩 メールでも受け取る — 毎日の元型レポート</p>
+    <div class="mrow"><input type="email" id="mi" placeholder="your@email.com"><button onclick="mSub()">無料登録</button></div>
+    <div class="mok" id="mok">✓ 登録完了しました</div>
+  </div>
+
+  <span class="admin-toggle" onclick="document.getElementById('admin').classList.toggle('hidden')">⚙ 管理者設定（URL変更）</span>
+  <div class="admin-panel hidden" id="admin">
+    <h3>URL設定</h3>
+    <div class="af"><label>YouTube URL</label><input id="yt-url" placeholder="https://youtube.com/watch?v=xxxxx or @channel"></div>
+    <div class="af"><label>LINE登録URL</label><input id="ln-url" placeholder="https://lin.ee/xxxxxxx"></div>
+    <div class="af"><label>メールフォームURL（Google Forms等）</label><input id="ml-url" placeholder="https://forms.gle/xxxxxxx"></div>
+    <button class="asave" onclick="saveAdmin()">保存して反映</button>
+  </div>
+</div>
+
+<script>
+// ===== 設定（管理者がここを変更） =====
+var CONFIG = {
+  ytUrl:   'https://youtube.com/@yourchannel',  // ← YouTubeチャンネルURLに変更
+  lineUrl: 'https://lin.ee/xxxxxxx',            // ← LINE登録URLに変更
+  mailUrl: ''                                    // ← Google FormsのURLに変更（空欄でも動作）
+};
+// =====================================
+
+var A=['王様','幼子','孤児','探求者','恋人','戦士','援助者','破壊者','創造者','魔法使い','道化','賢者'];
+var C={'王様':{cn:'キング',e:'👑',c:'#D4A017',bg:'rgba(212,160,23,.15)',d:'精神性'},'幼子':{cn:'げんちゃん',e:'🌱',c:'#5DCAA5',bg:'rgba(93,202,165,.15)',d:'人間性'},'孤児':{cn:'ボッチ',e:'🦅',c:'#378ADD',bg:'rgba(55,138,221,.15)',d:'人間性'},'探求者':{cn:'サーちん',e:'🧭',c:'#D4537E',bg:'rgba(212,83,126,.15)',d:'社会性'},'恋人':{cn:'ラーバ',e:'💫',c:'#F09595',bg:'rgba(240,149,149,.15)',d:'社会性'},'戦士':{cn:'ウォーりん',e:'⚔️',c:'#D85A30',bg:'rgba(216,90,48,.15)',d:'経済性'},'援助者':{cn:'ドーナー',e:'🤝',c:'#639922',bg:'rgba(99,153,34,.15)',d:'経済性'},'破壊者':{cn:'バクロン',e:'🌊',c:'#185FA5',bg:'rgba(24,95,165,.15)',d:'自然性'},'創造者':{cn:'クリエ',e:'🎨',c:'#BA7517',bg:'rgba(186,117,23,.15)',d:'自然性'},'魔法使い':{cn:'ウィザ',e:'✨',c:'#9B8BFF',bg:'rgba(155,139,255,.15)',d:'芸術性'},'道化':{cn:'エンテ',e:'🎭',c:'#EF9F27',bg:'rgba(239,159,39,.15)',d:'芸術性'},'賢者':{cn:'セージ',e:'📚',c:'#0F6E56',bg:'rgba(15,110,86,.15)',d:'精神性'}};
+var MT={1:[0,1,2,3,4,5,6,7,8,9,10,11],2:[11,0,1,2,3,4,5,6,7,8,9,10],3:[10,11,0,1,2,3,4,5,6,7,8,9],4:[9,10,11,0,1,2,3,4,5,6,7,8],5:[8,9,10,11,0,1,2,3,4,5,6,7],6:[7,8,9,10,11,0,1,2,3,4,5,6],7:[6,7,8,9,10,11,0,1,2,3,4,5],8:[5,6,7,8,9,10,11,0,1,2,3,4],9:[4,5,6,7,8,9,10,11,0,1,2,3],10:[3,4,5,6,7,8,9,10,11,0,1,2],11:[2,3,4,5,6,7,8,9,10,11,0,1],12:[1,2,3,4,5,6,7,8,9,10,11,0]};
+var ERA=[{s:1927,e:1944,l:'秋（認識）',c:'autumn'},{s:1945,e:1962,l:'冬（破壊）',c:'winter'},{s:1963,e:1979,l:'春（構築）',c:'spring'},{s:1980,e:1997,l:'夏（補強）',c:'summer'},{s:1998,e:2015,l:'秋（認識）',c:'autumn'},{s:2016,e:2033,l:'冬（破壊）',c:'winter'},{s:2034,e:2050,l:'春（構築）',c:'spring'}];
+
+var COMPAT={};
+A.forEach(function(a){COMPAT[a+'_'+a]='great';});
+['王様_賢者','賢者_王様','王様_創造者','創造者_王様','幼子_探求者','探求者_幼子','幼子_魔法使い','魔法使い_幼子','幼子_恋人','恋人_幼子','孤児_賢者','賢者_孤児','孤児_創造者','創造者_孤児','探求者_恋人','恋人_探求者','探求者_魔法使い','魔法使い_探求者','恋人_援助者','援助者_恋人','恋人_道化','道化_恋人','戦士_創造者','創造者_戦士','戦士_探求者','探求者_戦士','援助者_幼子','幼子_援助者','援助者_道化','道化_援助者','破壊者_創造者','創造者_破壊者','破壊者_魔法使い','魔法使い_破壊者','創造者_魔法使い','魔法使い_創造者','魔法使い_賢者','賢者_魔法使い','道化_魔法使い','魔法使い_道化','賢者_創造者','創造者_賢者'].forEach(function(p){if(!COMPAT[p])COMPAT[p]='good';});
+function getDayType(bi,ti){return COMPAT[bi+'_'+ti]||'warn';}
+
+var DM_GOOD={'王様':[{i:'💰',l:'金運',min:'収益の流れは来ているが半分しか受け取れない',min_sub:'チャンスを見落とし普通の一日で終わる',max:'大型契約・臨時収入が一気に動き出す',max_sub:'整えた決断力が今月最大の金運の流れを完全につかむ'},{i:'❤️',l:'人間関係',min:'縁は引き寄せられているが深まらず終わる',min_sub:'表面的な関係のまま重要な縁を逃す',max:'大切な人との絆が今日さらに深まり運命的な縁が生まれる',max_sub:'あなたの一言が相手の人生を変えるほどの力を持つ'},{i:'💪',l:'健康',min:'体は軽いが十分には活かせない',min_sub:'エネルギーが整わず本来の力が出ない',max:'全身のエネルギーが満ちて今月最高のコンディションになる',max_sub:'堂々と構えると体の奥から無限の活力が引き出される'},{i:'⚡',l:'仕事',min:'仕事は動いているが最大の成果には届かない',min_sub:'重要なチャンスを普通の機会として見過ごす',max:'今日の決断が今後の流れをすべて決める転換点になる',max_sub:'新しいビジネスチャンスが今日動き出し来月の景色が変わる'}],'幼子':[{i:'💰',l:'金運',min:'いい流れは来ているが衝動で一部を逃す',min_sub:'整えないと良縁の半分しか受け取れない',max:'思いがけない臨時収入・嬉しい話が確実に舞い込む',max_sub:'直感が最良のタイミングを知らせ人生が変わる投資機会をつかむ'},{i:'❤️',l:'人間関係',min:'良い出会いはあるが深い縁になりきれない',min_sub:'素直さが半分しか出ず相手の心が完全に開かない',max:'望む出会いが自然とあなたのもとを訪れ深い縁になる',max_sub:'純粋な言葉が相手の心の鎧を完全に外し何年もの誤解を溶かす'},{i:'💪',l:'健康',min:'体は元気だが本来の生命力の半分しか出ない',min_sub:'好奇心はあるが動きが中途半端で終わる',max:'体が蘇ったように軽くなり活力が全細胞から溢れ出す',max_sub:'今月最高のコンディションで心と体が完全に一致する'},{i:'⚡',l:'仕事',min:'仕事の流れは良いが突破口までは届かない',min_sub:'良いアイデアが半分しか形にならない',max:'新しいビジネスの突破口が今日突然開く',max_sub:'純粋な一問が一年間止まっていた仕事を一気に動かす'}],'孤児':[{i:'💰',l:'金運',min:'良い判断の種はあるが活かしきれない',min_sub:'孤独な視点は持っているが収益につながらない',max:'誰も気づかない収益の鉱脈を一人で発見し独占できる',max_sub:'冷静な独自分析が今月最高の経済的決断をもたらす'},{i:'❤️',l:'人間関係',min:'深い縁は近くにあるが気づかず通り過ぎる',min_sub:'良い出会いがあっても距離感で逃してしまう',max:'本当に必要な運命的な縁が今日あなたのもとに現れる',max_sub:'適切な独立心が相手に深い信頼感を与え一生の絆になる'},{i:'💪',l:'健康',min:'回復の流れはあるが深い部分まで届かない',min_sub:'体は動いているが内側のエネルギーが整わない',max:'静かな一人の時間が全身を魂の深い部分から完全に回復させる',max_sub:'体の最も深い緊張が溶け全細胞が生まれ変わる感覚になる'},{i:'⚡',l:'仕事',min:'集中力はあるが最大の成果までは届かない',min_sub:'良い洞察があっても行動が伴わない',max:'誰も届かない深さの突破口を一人の完全な集中で切り開く',max_sub:'今月最大の成果が静かに積み上がる最も重要な一日になる'}],'探求者':[{i:'💰',l:'金運',min:'新しい流れは来ているが一部しか受け取れない',min_sub:'チャンスの輪郭は見えているが掴みきれない',max:'新しいビジネスの大きな流れが今日突然舞い込む',max_sub:'人生を変える収益源を一点の探求で開く最高の日'},{i:'❤️',l:'人間関係',min:'良い出会いはあるが運命的な縁になりきれない',min_sub:'好奇心があっても深みに進む勇気が出ない',max:'運命的な出会いが今日あなたのもとを訪れ人生が変わる',max_sub:'好奇心と誠実さが今月最も重要な縁を完全に引き寄せる'},{i:'💪',l:'健康',min:'エネルギーの補充は起きているが中途半端',min_sub:'外に出ているが新鮮さを十分に吸収できない',max:'外に出るほど新鮮な活力が全細胞に行き渡り体が劇的に軽くなる',max_sub:'停滞していたエネルギーが一気に補充され今月最高の状態になる'},{i:'⚡',l:'仕事',min:'仕事の新しい流れは来ているが掴みきれない',min_sub:'良いタイミングに気づいても動けない',max:'今月最大のビジネスチャンスの扉が今日完全に開く',max_sub:'新しい視点が一年間止まっていた仕事を今日完全に動かす'}],'恋人':[{i:'💰',l:'金運',min:'豊かさの流れは来ているが半分しか循環しない',min_sub:'与える気持ちはあるが躊躇して流れを止めてしまう',max:'愛が完全に循環し思いがけない大きな豊かさが戻ってくる',max_sub:'先に与えたものが倍以上になって返ってくる奇跡が起きる'},{i:'❤️',l:'人間関係',min:'良い出会いや縁は来ているが深まりきらない',min_sub:'愛情はあるが素直に伝えられず機会を逃す',max:'望む出会いや深い愛が今日確実にあなたに訪れる',max_sub:'今日の愛の言葉が相手の人生に永遠に刻まれる最高の日'},{i:'💪',l:'健康',min:'ハートのエネルギーはあるが体全体には届かない',min_sub:'感情は整っているが体の変化として現れない',max:'愛のエネルギーが全細胞を温め体が内側から完全に蘇る',max_sub:'ハートが整うと全身のコンディションが今月最高になる'},{i:'⚡',l:'仕事',min:'情熱はあるが仕事の加速につながりきれない',min_sub:'チームへの愛情があっても伝わりきらない',max:'情熱が周囲を動かし仕事が奇跡的に加速する',max_sub:'愛情がチームを今日最高の状態に完全に引き上げる'}],'戦士':[{i:'💰',l:'金運',min:'収益の流れは来ているが本来の力を出せない',min_sub:'行動はしているが最大の成果の半分で終わる',max:'整えた行動力が今月最大・最速の収益を一気に動かす',max_sub:'積極的な行動が今月最大のビジネスチャンスを完全に開く'},{i:'❤️',l:'人間関係',min:'信頼の流れはあるが深い縁になりきれない',min_sub:'情熱はあるが相手に伝わりきらない',max:'守る力が最高の信頼と深い縁を今日生み出す',max_sub:'情熱と誠実さが人を巻き込む大きな流れを完全に作り出す'},{i:'💪',l:'健康',min:'エネルギーはあるが最大限には使えていない',min_sub:'体は動いているが本来の力の半分しか出ない',max:'闘志が全身のエネルギーを完全に最大化させる',max_sub:'今日動いた量が来月の体の強さの基礎を完全に作り上げる'},{i:'⚡',l:'仕事',min:'仕事の勢いはあるが最大の勝利に届かない',min_sub:'行動力はあるが重要なタイミングを逃す',max:'今日の全力が今月の最大の勝利をすべて決める',max_sub:'今日のスピードが今月の勝負を決める決定的な転換点になる'}],'援助者':[{i:'💰',l:'金運',min:'豊かさの流れはあるが半分しか受け取れない',min_sub:'与えているが返ってくる流れを受け取れていない',max:'先に与えたものが後で大金として確実に戻ってくる',max_sub:'戦略的な援助が信頼と予想外の大きな収益を同時に生み出す'},{i:'❤️',l:'人間関係',min:'良い縁は来ているが一生ものにはなりきれない',min_sub:'優しさは伝わっているが深い感謝まで届かない',max:'一生ものの縁と深い感謝が今日確実にもたらされる',max_sub:'本当に必要な人への援助が運命的な縁を今日生み出す'},{i:'💪',l:'健康',min:'エネルギーの補充はあるが満タンにはならない',min_sub:'与えることの喜びはあるが体全体に届いていない',max:'与える喜びが自分のエネルギーを逆に完全に満たしていく',max_sub:'感謝されることが全細胞を元気にし体が蘇る'},{i:'⚡',l:'仕事',min:'評価の流れはあるが最高の評価には届かない',min_sub:'サポートはしているが組織の最大化にはつながらない',max:'今日のサポートが最高の評価と昇進に確実につながる',max_sub:'整えた援助がチームを今月最高の状態に完全に引き上げる'}],'破壊者':[{i:'💰',l:'金運',min:'金運の流れは開きかけているが半分しか入らない',min_sub:'手放しているが詰まった流れが完全には開かない',max:'詰まっていた金運の流れが一気に完全に開く',max_sub:'手放した後に今まで見えなかった大きな収益の道が完全に開く'},{i:'❤️',l:'人間関係',min:'本物の縁に近づいているがまだ手が届かない',min_sub:'古い執着は薄れているが新しい縁がまだ来ない',max:'古い執着が完全に解放され本物の縁だけが残る',max_sub:'不要なしがらみを手放した直後に新しい出会いが確実に訪れる'},{i:'💪',l:'健康',min:'体は軽くなりかけているが深い回復まで届かない',min_sub:'デトックスは始まっているが完全には出しきれない',max:'感情のデトックスで体が驚くほど軽くなり完全に蘇る',max_sub:'解放のエネルギーが全細胞を生まれ変わらせる最高の日'},{i:'⚡',l:'仕事',min:'新しい仕事の流れは来ているが半分しか見えない',min_sub:'手放しているが新しいビジネスの扉がまだ見えない',max:'手放した直後に新しいビジネスの大きな扉が完全に開く',max_sub:'完全にリセットしたものは必ず今後大きく花開く'}],'創造者':[{i:'💰',l:'金運',min:'収益の種は育ちかけているが半分しか実らない',min_sub:'創造力はあるが収益という形にしきれない',max:'今日作ったものが将来の最大の収益源に確実に育つ',max_sub:'創造力と決断力が新しいビジネスの突破口を完全に生み出す'},{i:'❤️',l:'人間関係',min:'良い縁は近くにあるが深まりきれない',min_sub:'ビジョンは共有できているが最高の仲間まではつながらない',max:'一緒に何かを作る深い縁が今日確実に生まれる',max_sub:'ビジョンの共有が今月最も重要な仲間を完全に引き寄せる'},{i:'💪',l:'健康',min:'創造の喜びはあるが体全体への回復に届かない',min_sub:'手は動いているが深い癒しまではつながらない',max:'手を動かすことが心と体を同時に深く完全に癒す',max_sub:'クリエイティブな行動が今月最高のコンディションを作り出す'},{i:'⚡',l:'仕事',min:'良いものを作っているが今月最大には届かない',min_sub:'創造力はあるが最高の武器になりきれない',max:'今日完成させたものが今月最大の武器に確実になる',max_sub:'今日生んだものは長く価値を持ち続ける宝になる'}],'魔法使い':[{i:'💰',l:'金運',min:'棚ぼたの流れは来ているが半分しか受け取れない',min_sub:'チャンスは目の前にあるが気づかず通り過ぎる',max:'思いがけない大金が今日突然舞い込む可能性が最大になる',max_sub:'整えた直感が本物のチャンスを一瞬で正確に見抜きつかむ'},{i:'❤️',l:'人間関係',min:'運命的な縁は来ているが見逃しかねない',min_sub:'不思議な出会いはあるが人生を変える縁にはなりきれない',max:'運命的な出会いが今日人生を変える決定的な瞬間になる',max_sub:'予想外の縁が今月最も重要な人を完全に引き寄せる'},{i:'💪',l:'健康',min:'エネルギーは湧いているが完全には感じられない',min_sub:'体は軽くなりかけているが全細胞には届かない',max:'体が不思議なほど軽くなり全細胞が同時に蘇る',max_sub:'エネルギーが湧き出て今月最高のコンディションになる'},{i:'⚡',l:'仕事',min:'革新的な流れは来ているが半分しか受け取れない',min_sub:'良いアイデアはあるが革命的な形にはなりきれない',max:'革命的なアイデアが突然降り新しいビジネスが今日生まれる',max_sub:'今日降ってくるアイデアが来年の最大のビジネスを作る'}],'道化':[{i:'💰',l:'金運',min:'金運の流れは来ているが半分しか受け取れない',min_sub:'楽しく動いているが最大の収益の流れを掴みきれない',max:'楽しみながら動くことで大きな金運の流れが完全に来る',max_sub:'場を和ませながら最高の条件を自然に引き出す最高の日'},{i:'❤️',l:'人間関係',min:'良い縁は来ているが深い絆になりきれない',min_sub:'笑いはあるが心の深い部分まで届いていない',max:'笑いが今日最も深い縁を生み出す奇跡になる',max_sub:'一緒に笑うことで何年もの壁が一瞬で完全に溶ける'},{i:'💪',l:'健康',min:'笑いはあるが深い回復まではつながらない',min_sub:'テンションは高いが免疫力の最大化までは届かない',max:'本物の笑いが免疫力を最大化し全細胞が完全に蘇る',max_sub:'笑いが全身の緊張をほぐし今月最高のコンディションになる'},{i:'⚡',l:'仕事',min:'チームの空気は明るくなっているが完全ではない',min_sub:'遊び心はあるが停滞を完全には動かしきれない',max:'遊び心が停滞したチームを完全に復活させる',max_sub:'ユーモアが今日チームの空気を一瞬で完全に変える'}],'賢者':[{i:'💰',l:'金運',min:'収益の道は見えているが半分しか歩けない',min_sub:'知恵はあるが最大の経済的決断には届かない',max:'蓄積された知恵が大きな収益の道を完全に開く',max_sub:'整えた知性と分析が今月最高の経済的決断を完全にもたらす'},{i:'❤️',l:'人間関係',min:'良い言葉は出ているが相手の人生を変えるまでは届かない',min_sub:'洞察力はあるが最高の信頼関係になりきれない',max:'深い洞察から生まれた言葉が相手の人生を確実に変える',max_sub:'謙虚な知恵が今日最も深い信頼関係を完全に生み出す'},{i:'💪',l:'健康',min:'心は静まりかけているが体の深い緊張まで届かない',min_sub:'瞑想はしているが全細胞までは届いていない',max:'心が完全に静まり体の最も深い緊張が一気に解け全細胞が蘇る',max_sub:'瞑想・静寂が知恵を整え体を今月最高の状態に完全にする'},{i:'⚡',l:'仕事',min:'仕事の流れは良いが今月最大の転換点には届かない',min_sub:'判断力はあるが来月の景色を変えるほどの力にはなりきれない',max:'今日の言葉と判断が来月の景色をすべて完全に決める',max_sub:'整えた叡智が今月最大のビジネスの転換点を生み出す'}]};
+
+var DM_WARN={'王様':[{i:'💰',l:'金運',b1:'感情的な大判断で大きな損失が生まれる',b2:'後悔する契約・出費→数ヶ月引きずる',g1:'整えれば大型契約・臨時収入が動き出す',g2:'今月最大の収益の流れがあなたに向かう'},{i:'❤️',l:'人間関係',b1:'高圧的な一言で信頼が音を立てて崩れる',b2:'大切な人が「もうついていけない」と静かに去る',g1:'包容力が最大化し深い縁と信頼が生まれる',g2:'あなたの言葉が今日相手の人生を動かす'},{i:'💪',l:'健康',b1:'責任感が体に乗り肩・首が石になる',b2:'プレッシャーが内側から体を壊していく',g1:'整えると全身のエネルギーが流れ最高のコンディションへ',g2:'堂々とした姿勢が体の奥から元気を引き出す'},{i:'⚡',l:'仕事',b1:'独断専行で重要な人が静かに去っていく',b2:'今日の誤判断が来月まで尾を引く大きなミスに',g1:'整えれば今月最大のビジネスチャンスが動き出す',g2:'今日の一つの決断が組織の流れをすべて変える'}],'幼子':[{i:'💰',l:'金運',b1:'衝動的な出費・即決契約で後悔する損失が出る',b2:'「楽しそう」だけで動き財布が空になる',g1:'思いがけない臨時収入・嬉しい話が舞い込む',g2:'直感が最良のタイミングを知らせ人生が変わる'},{i:'❤️',l:'人間関係',b1:'無邪気な一言が積み上げた信頼を瞬時に崩す',b2:'幼稚に見える言動が重要な縁を切ってしまう',g1:'望む出会いが自然とあなたのもとを訪れる',g2:'素直な言葉が何年もの誤解を一瞬で溶かす'},{i:'💪',l:'健康',b1:'動きすぎて夕方にエネルギーが完全に尽きる',b2:'テンションで疲労を誤魔化し体が悲鳴を上げる',g1:'体が蘇ったように軽くなり活力が全開になる',g2:'好奇心が体を動かし今月最高のコンディションへ'},{i:'⚡',l:'仕事',b1:'思いつきで動き完成が永遠に遠のく',b2:'スピードが先走り品質が完全についてこない',g1:'新しいビジネスの突破口が今日突然開く',g2:'純粋な問いが停滞していた仕事を一気に動かす'}],'孤児':[{i:'💰',l:'金運',b1:'誰にも相談しない孤立した判断→大きな損失',b2:'孤独な情報判断が詐欺・損失のリスクを招く',g1:'誰も気づかない収益の鉱脈を一人で発見する',g2:'冷静な独自分析が今月最高の経済的決断に'},{i:'❤️',l:'人間関係',b1:'「一人でいい」の一言で大切な縁が静かに死ぬ',b2:'距離を置きすぎて大切な人が諦めて去る',g1:'深い縁が生まれ本当に必要な人が現れる',g2:'適切な独立心が相手に深い信頼感を与える'},{i:'💪',l:'健康',b1:'誰にも言えない疲労が体に溜まり続ける',b2:'孤独なプレッシャーが体を石のように固める',g1:'静かな回復で体の深い部分からエネルギーが蘇る',g2:'一人の静寂が全身のエネルギーを完全に整える'},{i:'⚡',l:'仕事',b1:'独り善がりな判断でチームが音もなく崩れる',b2:'孤立した判断がチーム全体を危機に陥れる',g1:'誰も気づかない突破口を一人の集中で開く',g2:'深い集中力が今月最大の成果を静かに生み出す'}],'探求者':[{i:'💰',l:'金運',b1:'複数の話に手を出し全て中途半端→収益ゼロ',b2:'「面白そう」だけで動き後悔する出費が続く',g1:'新しいビジネスの流れが今日突然舞い込む',g2:'一点に絞った探求が人生を変える収益源を開く'},{i:'❤️',l:'人間関係',b1:'広く浅く動き深い縁が一つも作れない',b2:'次々新しい縁を求め既存の深い縁が枯れていく',g1:'運命的な出会いが今日あなたのもとを訪れる',g2:'好奇心と誠実さが今月最も重要な縁を引き寄せる'},{i:'💪',l:'健康',b1:'動きすぎてエネルギーが全方位に分散し消耗する',b2:'新しいことに飛びつきすぎ体のリズムが崩れる',g1:'新鮮な活力が全細胞に行き渡り体が軽くなる',g2:'外に出て停滞していたエネルギーが一気に補充される'},{i:'⚡',l:'仕事',b1:'優先順位が崩れ最重要な仕事が静かに遅れる',b2:'あれもこれもで一つも完成しない一日になる',g1:'今月最大のビジネスチャンスの扉が今日開く',g2:'新しい視点が止まっていた仕事を今日動かす'}],'恋人':[{i:'💰',l:'金運',b1:'愛情からの衝動的な出費→後悔する損失が出る',b2:'「あなたのために」という名目で無駄な出費が続く',g1:'愛が循環し大きな金運の流れが生まれる',g2:'与えたものが倍になって戻ってくる奇跡が起きる'},{i:'❤️',l:'人間関係',b1:'愛情が執着に変わり相手が静かに逃げていく',b2:'「愛しているから」という支配が縁を腐らせる',g1:'望む出会いや深い愛が今日あなたに訪れる',g2:'今日の愛の言葉が相手の人生に永遠に刻まれる'},{i:'💪',l:'健康',b1:'感情の波が自律神経に直撃し体が崩れる',b2:'相手の感情に引きずられ自分の体が消耗する',g1:'愛のエネルギーが全細胞を温め体が蘇る',g2:'ハートが整うと全身のコンディションが劇的に変わる'},{i:'⚡',l:'仕事',b1:'感情優先の判断でチームに取り返せない亀裂が入る',b2:'感情的なマネジメントでチームが静かに疲弊する',g1:'情熱が周囲を動かし仕事が奇跡的に加速する',g2:'愛情がチームを今日最高の状態に引き上げる'}],'戦士':[{i:'💰',l:'金運',b1:'強引な手法で信頼と利益を同時に永遠に失う',b2:'勢いで動く→後で気づく取り返せない大きな損失',g1:'整えれば今月最大・最速の収益が一気に動き出す',g2:'積極的な行動が今月最大のビジネスチャンスを開く'},{i:'❤️',l:'人間関係',b1:'勝ちへの執着が最も大切な人を静かに遠ざける',b2:'自分のペースで突進し相手が深く傷つく',g1:'守る力が最高の信頼と深い縁を生み出す',g2:'情熱と誠実さが人を巻き込む大きな流れを作る'},{i:'💪',l:'健康',b1:'体の声を無視して動き続け後で完全に動けなくなる',b2:'無理を重ね体の限界を無意識に超えていく',g1:'闘志が全身のエネルギーを最大化させる',g2:'今日動いた量が来月の体の強さの基礎を完全に作る'},{i:'⚡',l:'仕事',b1:'強引さが今後何ヶ月もの障害を自ら生み出す',b2:'計画なき突進でエネルギーと機会が空回りする',g1:'今日の全力が今月の勝利をすべて決める',g2:'今日のスピードが今月の勝負を決める転換点になる'}],'援助者':[{i:'💰',l:'金運',b1:'断れない性格につけ込まれ気づけば財布が空になる',b2:'見返りなく与え続け気づけば自分が苦しくなっている',g1:'先に与えたものが後で大金として戻ってくる',g2:'戦略的な援助が信頼と予想外の大きな収益を生む'},{i:'❤️',l:'人間関係',b1:'誰にでも優しくして自分が消耗し縁が重荷になる',b2:'自己犠牲の優しさが相手を甘えさせ縁を腐らせる',g1:'一生もの縁と深い感謝が今日もたらされる',g2:'本当に必要な人への援助が運命的な縁を生み出す'},{i:'💪',l:'健康',b1:'人のために動きすぎて自分の体が完全に倒れる',b2:'人の痛みを感じすぎて自分の体が限界を超える',g1:'与える喜びが自分のエネルギーを逆に満たす',g2:'感謝されることが全細胞を元気にしていく'},{i:'⚡',l:'仕事',b1:'頼まれた仕事を全部引き受け自分の仕事が消える',b2:'人助けが優先になり重要な締め切りを逃す',g1:'今日のサポートが最高の評価と信頼につながる',g2:'適切な援助がチームを最高の状態に引き上げる'}],'破壊者':[{i:'💰',l:'金運',b1:'衝動的な解約・撤退で後悔しても戻れない損失',b2:'必要なものまで手放し後で気づく取り返せない損失',g1:'詰まっていた金運の流れが一気に開く',g2:'手放した後に大きな収益の道が開く'},{i:'❤️',l:'人間関係',b1:'「もういい」の一言で大切な縁が永遠に死ぬ',b2:'衝動的なリセットが重要な人間関係を消し去る',g1:'古い執着が解放され本物の縁だけが残る',g2:'不要なしがらみを手放した後に新しい出会いが訪れる'},{i:'💪',l:'健康',b1:'ストレスの爆発が体に直撃し胃腸・心臓に出る',b2:'感情を溜め込みすぎた体が今日限界を超える',g1:'デトックスで体が驚くほど軽くなる',g2:'解放のエネルギーが全細胞を生まれ変わらせる'},{i:'⚡',l:'仕事',b1:'今日の廃止・撤退判断は時期尚早で必ず後悔する',b2:'改革の途中でやめると最悪の中途半端状態になる',g1:'手放した後に新しいビジネスの扉が開く',g2:'完全にリセットしたものは必ず大きく花開く'}],'創造者':[{i:'💰',l:'金運',b1:'作るだけで売ることを考えず収益がゼロのまま',b2:'こだわりが強すぎてコストが膨らみ赤字になる',g1:'今日作ったものが将来の大きな収益源に育つ',g2:'創造力と決断力が新しいビジネスの突破口を生み出す'},{i:'❤️',l:'人間関係',b1:'自分の世界に入りすぎ大切な人が見えなくなる',b2:'自分のビジョンを押しつけて人が離れていく',g1:'一緒に何かを作る深い縁が今日生まれる',g2:'ビジョンの共有が今月最も重要な仲間を引き寄せる'},{i:'💪',l:'健康',b1:'没頭しすぎて食事・水分・睡眠を完全に忘れる',b2:'完璧主義の疲弊が慢性的な疲労として体に残る',g1:'手を動かすことが心と体を同時に深く癒す',g2:'クリエイティブな行動が今月最高のコンディションを作る'},{i:'⚡',l:'仕事',b1:'完成しないアイデアと作りかけが散乱する一日',b2:'一人で全部抱えて完成が永遠に遠のく',g1:'今日完成させたものが今月最大の武器になる',g2:'今日生んだものは長く価値を持ち続ける宝になる'}],'魔法使い':[{i:'💰',l:'金運',b1:'根拠のない確信で動き大きな損失を招く',b2:'「必ずうまくいく」の直感が今日は間違っている',g1:'思いがけない大金が突然舞い込む可能性がある',g2:'整えた直感が本物のチャンスを一瞬で見抜く'},{i:'❤️',l:'人間関係',b1:'不思議な縁に振り回されて軸を完全に失う',b2:'軽い言動が相手の魂に深い誤解を刻む',g1:'運命的な出会いが今日人生を変える瞬間になる',g2:'予想外の縁が今月最も重要な人を引き寄せる'},{i:'💪',l:'健康',b1:'現実から浮きすぎて体のケアを完全に忘れる',b2:'気分が高すぎて体の悲鳴に気づかない',g1:'体が不思議なほど軽くなり全細胞が蘇る',g2:'エネルギーが湧き出て今月最高のコンディションになる'},{i:'⚡',l:'仕事',b1:'空想的な判断でチームが混乱し信頼を失う',b2:'チャンスを「たまたま」と思い素通りさせる',g1:'革命的なアイデアが突然降り新しい仕事が生まれる',g2:'今日降ってくるアイデアが来年のビジネスを作る'}],'道化':[{i:'💰',l:'金運',b1:'軽い雰囲気で重要な交渉を完全に失敗する',b2:'楽しい雰囲気で重要な金銭的判断を軽くしすぎる',g1:'楽しみながら動くことで大きな金運の流れが来る',g2:'場を和ませながら最高の条件を自然に引き出す'},{i:'❤️',l:'人間関係',b1:'冗談で誤魔化し続け相手の信頼が静かに死ぬ',b2:'笑いで本音を隠し続け関係が空洞になっていく',g1:'笑いが今日最も深い縁を生み出す奇跡になる',g2:'一緒に笑うことで何年もの壁が一瞬で溶ける'},{i:'💪',l:'健康',b1:'緊張を笑いで誤魔化して無理をし続ける',b2:'テンションで疲労を誤魔化し体が限界を超える',g1:'本物の笑いが免疫力を最大化し体が蘇る',g2:'笑いが全身の緊張をほぐし最高のコンディションになる'},{i:'⚡',l:'仕事',b1:'真剣な場で軽すぎる言動が評価を永遠に下げる',b2:'場を和ませすぎて真剣な話が永遠にできなくなる',g1:'遊び心が停滞したチームを完全に復活させる',g2:'ユーモアが今日チームの空気を一瞬で変える'}],'賢者':[{i:'💰',l:'金運',b1:'過信による大きな判断ミスが今月の損失を生む',b2:'知識の過信が見えない落とし穴に踏み込ませる',g1:'蓄積された知恵が大きな収益の道を開く',g2:'整えた知性が今月最高の経済的決断をもたらす'},{i:'❤️',l:'人間関係',b1:'正論で相手の心が永遠に閉じ大切な縁が死ぬ',b2:'「知っている」という態度が相手を完全に遠ざける',g1:'深い洞察から生まれた言葉が相手の人生を変える',g2:'謙虚な知恵が今日最も深い信頼関係を生み出す'},{i:'💪',l:'健康',b1:'思考過多で体が完全に固まる。肩・首・目に出る',b2:'完璧主義のストレスが慢性的な疲労として蓄積する',g1:'心が静まり体の深い緊張が一気に解け蘇る',g2:'瞑想・静寂が知恵を整え体を最高の状態にする'},{i:'⚡',l:'仕事',b1:'完璧な計画を求めすぎて重要な一手が永遠に遅れる',b2:'独断的な知識で重要な人が静かに離れていく',g1:'今日の言葉と判断が来月の景色をすべて決める',g2:'整えた叡智が今月最大のビジネスの転換点を生み出す'}]};
+
+var GREAT_TITLES={'王様':'キングよ、今日あなたに宇宙が全力を注いでいる','幼子':'げんちゃんよ、今日生命力が宇宙と完全に共鳴する','孤児':'ボッチよ、今日孤独の力が宇宙の頂点に達する','探求者':'サーちんよ、今日好奇心が宇宙と完全に共鳴する','恋人':'ラーバよ、今日愛のエネルギーが宇宙最大になる','戦士':'ウォーりんよ、今日闘志が宇宙の全力と一つになる','援助者':'ドーナーよ、今日与える力が宇宙に満ちる','破壊者':'バクロンよ、今日解放の力が宇宙と完全に共鳴する','創造者':'クリエよ、今日創造力が宇宙の全力と一つになる','魔法使い':'ウィザよ、今日奇跡が現実になる最高の日だ','道化':'エンテよ、今日笑いの力が宇宙と完全に共鳴する','賢者':'セージよ、今日叡智が宇宙の頂点に達する'};
+var GREAT_BODIES={'王様':'見えている。本質・今日・今月の三つの力が完全に重なる稀な日だ。今日動いたことは必ず大きな実りとなる。大きな決断・重要な交渉・大切な告白——今日がその日だ。整えれば、この日の恵みは想像を超える大きさになる。','幼子':'見えている。今日のあなたの生命力は宇宙と完全に共鳴している。思い切って動いたことが全て正解になる日だ。整えれば、今日の純粋さが奇跡を引き寄せ、望む全てが手元に来る。','孤児':'見えている。今日のあなたの集中力と洞察は頂点にある。一人で静かに取り組んだことが、誰も想像できない突破口を開く。整えれば、今月最大の成果が今日静かに生まれる。','探求者':'見えている。今日のあなたの好奇心は宇宙と共鳴している。今日出会うもの、今日踏み出した一歩——それが人生を変える縁を引き寄せる。整えれば、その恵みは想像を超える。','恋人':'見えている。今日のあなたの愛のエネルギーは宇宙最大の状態にある。素直に伝えたこと、与えたこと、愛したこと——すべてが今日、倍以上になって確実に返ってくる。','戦士':'見えている。今日のあなたの行動力は宇宙と完全に共鳴している。ためらっていたことを今日動かせ。整えれば、その一手が今月最大の勝利を完全に決める。','援助者':'見えている。今日のあなたの与える力は宇宙と共鳴している。誰かに手を差し伸べたこと——今日それは必ず予想をはるかに超えた大きさで戻ってくる。整えれば与えるほど豊かになる。','破壊者':'見えている。今日のあなたの解放の力は宇宙と共鳴している。古いものを手放すほど、新しい豊かさが一気に流れ込んでくる。整えれば手放したものの何倍もの恵みが入る。','創造者':'見えている。今日のあなたの創造力は宇宙と完全に共鳴している。今日作ったもの、今日始めたもの——整えれば、それは必ず長く大きな価値を持ち続ける宝になる。','魔法使い':'見えている。今日の宇宙はあなたのために最高の扉を全開にしている。常識では考えられない出来事が今日起きる可能性が最大だ。整えれば、その奇跡を完全に受け取れる。','道化':'見えている。今日のあなたの笑いの力は宇宙と完全に共鳴している。全力で笑い、全力で楽しんでくれ。整えれば、その笑顔が今日誰かの人生を変える奇跡になる。','賢者':'見えている。今日のあなたの洞察力は宇宙と共鳴している。今日語った言葉は相手の人生に深く永遠に刻まれる。整えれば、その言葉の力は想像を超えた大きさになる。'};
+var GOOD_BODIES={'王様':'見えている。今日のあなたの本質と今日の流れが美しく重なっている。整えなければ今日の恵みの半分しか受け取れない。整えれば、今日動いた決断が今後長く大きな実りをもたらす。','幼子':'見えている。今日のあなたの純粋なエネルギーが今日の流れと共鳴している。整えなければ良い流れの半分しか受け取れない。整えれば、今日踏み出した一歩が全て正解になる。','孤児':'見えている。今日のあなたの集中力が今日の流れと共鳴している。整えなければ今日の深い力が中途半端に終わる。整えれば、一人で取り組んだことが今月最大の成果を生む。','探求者':'見えている。今日のあなたの探求心が今日の流れと共鳴している。整えなければ良い縁を半分しか受け取れない。整えれば、今日踏み出した一歩が人生を変える縁を完全に引き寄せる。','恋人':'見えている。今日のあなたの愛のエネルギーが今日の流れと共鳴している。整えなければ今日の豊かさの半分しか循環しない。整えれば、与えたものが倍以上になって確実に戻ってくる。','戦士':'見えている。今日のあなたの行動力が今日の流れと共鳴している。整えなければ今日の力の半分しか成果にならない。整えれば、今日の一手が今月最大の勝利を完全に決める。','援助者':'見えている。今日のあなたの優しさが今日の流れと共鳴している。整えなければ今日の恵みの半分しか戻ってこない。整えれば、今日与えたものが予想を超えた大きさで返ってくる。','破壊者':'見えている。今日のあなたの解放のエネルギーが今日の流れと共鳴している。整えなければ手放した恵みの半分しか入ってこない。整えれば手放すほど新しい豊かさが完全に流れ込む。','創造者':'見えている。今日のあなたの創造力が今日の流れと共鳴している。整えなければ今日のビジョンが半分しか形にならない。整えれば今日作ったものが長く価値を持ち続ける宝になる。','魔法使い':'見えている。今日のあなたの直感が今日の流れと共鳴している。整えなければ奇跡の半分しか受け取れない。整えれば、常識を超えた恵みが完全にあなたのもとに来る。','道化':'見えている。今日のあなたの笑いのエネルギーが今日の流れと共鳴している。整えなければ今日の縁と豊かさの半分しか引き寄せられない。整えれば笑うほど恵みが完全に増える。','賢者':'見えている。今日のあなたの洞察力が今日の流れと共鳴している。整えなければ今日の言葉の力が半分しか届かない。整えれば今日の言葉が相手の人生を完全に変える力になる。'};
+var WARN_TITLES={'王様':['今日の言葉は三ヶ月後も相手の魂に刻まれる','権威が暴走し最も大切なものを壊す特異日','王の孤独が判断を狂わせ全てを失う日'],'幼子':['衝動に従えば三年後も後悔する','純粋なエネルギーが罠に変わる特異日','「やめた」の一言が今日は致命傷になる'],'孤児':['孤独な判断が今日最大のリスクを招く','一人で抱えた重さが今日爆発する','孤立した魂が見えない罠に落ちる特異日'],'探求者':['広げすぎた網に今日自分が絡まる','好奇心が見えない罠に誘い込む特異日','求めすぎて最も大切なものを見失う日'],'恋人':['愛情が執着に変わる瞬間が今日訪れる','「好き」という言葉が今日は刃になる','深く愛するほど今日は深く傷つける日'],'戦士':['最強のエネルギーが最大の破壊を起こす日','勝ちへの執着が最も大切なものを壊す','整えなければ今日の力は全て敵に回る'],'援助者':['与えすぎて今日あなた自身が空になる','断れない優しさが今日最大のリスクになる','真心が利用される最も危険な特異日'],'破壊者':['今日手放したものは二度と戻らない','「もうやめた」の衝動が今日最大になる','壊す力が必要なものまで消し去る特異日'],'創造者':['こだわりが強すぎて今日誰もついてこれない','作りかけが山積みになり全て消える特異日','今日生まれたビジョンを正しく扱わないと消える'],'魔法使い':['奇跡と罠が同時に訪れる最も特異な日','直感と妄想の境界が消える危険な日','今日の一つの選択が現実の流れを完全に変える'],'道化':['笑いで誤魔化すほど今日は深みにはまる','軽い一言が今日は消えない深い傷を残す','笑いのエネルギーが逆回転する特異日'],'賢者':['今日の知識がエゴの武器に変わる特異日','正しすぎる言葉が今日は呪いになる','知恵が孤高の孤独をさらに深める日']};
+var WARN_BODIES={'王様':['見えている。今日のあなたの内側に、制御されぬ王の炎が燃えている。整えなければその炎は最も大切な者を焼き尽くす。動く前に、静まれ。','宇宙はあなたに問うている。あなたは真の王か、それとも恐怖から命じる者か。今日その答えが縁と富の流れをすべて決める。','今日の沈黙は弱さではない。整えられた王の沈黙は千の言葉より深く世界を動かす。まず受け取れ。'],'幼子':['見えている。あなたの内側で生命の炎が激しく揺れている。その純粋さは最強の力であり最大の隙でもある。整えなければ大切なものを無分別に燃やす。','宇宙の声が届いている。あなたの魂はまだ走りたがっている。だが今日の道には見えない落とし穴がある。走る前に一度立ち止まれ。','今日のあなたの笑顔は世界を変える力を持つ。だが整えなければその笑顔が深刻な場面で信頼を傷つける刃になる。'],'孤児':['見えている。あなたは今誰にも見せない場所で何かを抱えている。その重さが今日判断を歪める。一人で決めるな。整えてから動け。','宇宙はあなたの孤独を知っている。その孤独は力だが今日は罠だ。整えなければ最も大切な縁をあなた自身の手で切ることになる。','今日の孤独のエネルギーは研ぎ澄まされた刃だ。使い方を誤れば自分を傷つける。整えれば誰も届かない深さで道を切り開く。'],'探求者':['見えている。あなたの魂は今無数の方向へ引っ張られている。全てに応じれば今日何も深めることができない。一つを選べ。整えてから選べ。','宇宙があなたに告げている。今日出会う縁の中に人生を変えるものが一つある。だが整えなければその縁を見過ごす。まず内側を整えろ。','探求のエネルギーが最大の日。だが地図なき旅人は遭難する。今日の行動に方向を与えるために、まず受け取ってくれ。'],'恋人':['見えている。あなたの魂から愛のエネルギーが溢れている。その愛は宇宙で最も強い力だ。だが整えなければその愛は今日相手を縛る鎖に変わる。','今日のあなたの「好き」はそのままでは暴走する。整えればその言葉一つで相手の人生が変わる。整えなければその言葉が永遠の別れを呼ぶ。','宇宙はあなたの愛を見ている。愛する前に、まず整えろ。満ちた器からしか真の愛は注げない。'],'戦士':['見えている。今日のエネルギーは制御されなければ嵐になる。武器は使う方向を誤れば自分に返ってくる。今日だけは動く前に必ず整えてくれ。','今日のあなたには止める力がない。それが最強であり最危険だ。整えなければ勝つために大切な人を踏み越える。整えれば今月最大の勝利を手にする。','宇宙はあなたの闘志を見ている。その炎は本物だ。だが整えなければ今日最も近くにいる人が一番傷つく。動く前に一度受け取ってくれ。'],'援助者':['見えている。あなたの魂から光が溢れている。その光を求める者が今日多く集まる。整えなければ自分の光を全て与え尽くし空になる。まず自分を満たせ。','あなたの優しさは本物だ。だからこそ今日は危ない。整えなければあなたの真心は利用される。本当に必要な人のもとに力が届くよう、まず整えてくれ。','宇宙はあなたの与える力を知っている。今日それが最大になっている。だが器が空では与えられない。まず受け取れ。'],'破壊者':['見えている。あなたの内側で波が高まっている。その波は宇宙が与えた解放の力だ。だが整えなければ今日その波は必要なものまで飲み込む。行動の前に必ず整えてくれ。','今日のあなたに「もういい」「終わりだ」という言葉を言わせてはならない。その言葉は今日呪いのような力を持つ。口にする前にまずこの動画を受け取ってくれ。','宇宙はあなたに解放を求めている。だが何を解放するかを間違えれば今日最も大切なものを失う。整えてから手放せ。'],'創造者':['見えている。あなたの内側で無数のビジョンが渦巻いている。そのビジョンは宇宙からの贈り物だ。だが整えなければ今日形になる前に消えていく。まず受け取れ。','今日のあなたは生みの苦しみの中にいる。整えなければ完璧を求めすぎて何も完成しない一日になる。今日の目的を一つに定めてから動いてくれ。','宇宙はあなたの手に創造の種を置いた。今日その種は土に植えられるか風に飛ばされるか。整えることで今日生まれたものが長く輝き続ける。'],'魔法使い':['見えている。今日の宇宙はあなたのために特別な扉を開いている。だがその扉の隣には罠もある。整えなければ奇跡の扉と罠の扉を見分ける目が曇る。まず受け取れ。','今日のあなたの直感は異次元のレベルだ。整えれば誰も気づかない現実の裂け目から光を引き込める。整えなければその直感は現実から浮いた妄想になる。','宇宙があなたに告げている。今日は魔法が起きる。その魔法を受け取るか見逃すかは、あなたが整えているかどうかだけで決まる。'],'道化':['見えている。あなたの魂は今日場を明るくしたがっている。その力は本物だ。だが整えなければあなたの笑いは今日最も大切な場面で信頼を壊す刃になる。','今日のあなたには「笑えばいい」という衝動がある。だが宇宙はあなたに問うている。その笑いは本物か、それとも何かから逃げるための仮面か。','笑いは宇宙で最も強い力の一つだ。整えなければ今日その力はあなた自身を守る仮面になり本当の自分を隠し続ける呪いになる。'],'賢者':['見えている。今日のあなたは最も賢く最も危険な状態にある。整えなければその叡智はエゴの仮面をつけ今日出会う全ての人の心を閉じさせる。','今日のあなたの言葉は予言の力を持つ。だが整えなければその言葉は呪いになる。誰かに伝える前にそれがエゴから来ているのかを確かめてくれ。','宇宙はあなたの知恵を讃えている。だが今日整えなければあなたは正しいことを言いながら大切なものを全て失う。まず内側を整えてから口を開いてくれ。']};
+var WARN_CTAS={'王様':['整えなければ最強が最悪になる。今すぐ動画でキングの炎を正しく灯せ。','今日の言葉は運命を刻む。チューニング動画を見てから口を開け。','王として動く前に静まれ。その一分が今月のすべてを変える。'],'幼子':['このエネルギーを整えれば今月最強の一日になる。今すぐ動画を受け取れ。','走る前に方向を整えろ。その十分が人生を変える。','今日の純粋さを守るために、まずチューニング動画を見てくれ。'],'孤児':['孤独な力を整えれば扉が開く。今すぐ動画でその鍵を受け取れ。','一人で動く前に整えろ。その違いが今月のすべてを分ける。','孤独の刃を正しく使うために、まずチューニング動画を見てくれ。'],'探求者':['広げる前に整えろ。その焦点が今月の収穫を決める。','今日出会う縁を見逃すな。動画で目を開いてから動け。','探求の方向を整えれば人生が変わる。今すぐ受け取れ。'],'恋人':['愛する前に整えろ。その準備が今日の奇跡を呼ぶ。','今日の愛を正しく使うために、まず動画を受け取れ。','愛のエネルギーを整えれば今日は人生が変わる。今すぐ見てくれ。'],'戦士':['動く前に整えろ。その一分が今月のすべてを分ける。','今日の力を正しく使うために、まず動画を受け取れ。','整えなければ最強が最悪になる。今すぐチューニングしてくれ。'],'援助者':['与える前に整えろ。空の器からは何も与えられない。','今日の優しさを正しく使うために、まず動画を受け取れ。','整えた援助者は最強だ。今すぐチューニング動画を見てくれ。'],'破壊者':['壊す前に整えろ。その一瞬が今後の人生を分ける。','今日の手放しを正しく行うために、まず動画を受け取れ。','整えなければ大切なものを失う。今すぐチューニングしてくれ。'],'創造者':['作る前に整えろ。その一手が今月の収穫を決める。','今日のビジョンを正しく形にするために、まず動画を受け取れ。','整えた創造者は世界を変える。今すぐチューニング動画を見てくれ。'],'魔法使い':['奇跡を受け取るか逃すかは整えているかだけで決まる。今すぐ動画を見てくれ。','今日の魔法を正しく使うために、まず受け取れ。','整えなければ奇跡は素通りする。今すぐチューニングしてくれ。'],'道化':['笑う前に整えろ。その違いが今月のすべてを変える。','今日の笑いを正しく使うために、まず動画を受け取れ。','整えた笑いは世界を変える。今すぐチューニング動画を見てくれ。'],'賢者':['知恵をエゴから切り離せ。その一手が今月のすべてを変える。','今日の言葉は運命を刻む。動画を見てから口を開いてくれ。','整えた賢者は世界を変える。今すぐチューニング動画を見てくれ。']};
+
+function bsL(yr,mo,dy){var doy=Math.floor((new Date(yr,mo-1,dy)-new Date(yr,0,1))/86400000)+1;var tot=(yr%4===0&&(yr%100!==0||yr%400===0))?366:365;var t=((yr-1927)%4+doy/tot)%4;return[['夏（補強）','秋（認識）','冬（破壊）','春（構築）'][~~t],['summer','autumn','winter','spring'][~~t]];}
+function eraL(yr){for(var i=0;i<ERA.length;i++)if(yr>=ERA[i].s&&yr<=ERA[i].e)return[ERA[i].l,ERA[i].c];return['不明','winter'];}
+
+// 今日の日付を動的取得
+function getTodayInfo(){var d=new Date();return{day:d.getDate(),month:d.getMonth()+1};}
+
+function go(){
+ var yr=parseInt(document.getElementById('yr').value);
+ var mo=parseInt(document.getElementById('mo').value);
+ var dy=parseInt(document.getElementById('dy').value);
+ var err=document.getElementById('err'),res=document.getElementById('res');
+ err.classList.add('hidden');res.classList.add('hidden');
+ if(!yr||!mo||!dy||yr<1927||yr>2025||dy<1||dy>31){err.textContent='1927〜2025年の正しい生年月日を入力してください';err.classList.remove('hidden');return;}
+
+ var today=getTodayInfo();
+ var bi=A[(dy-1)%12],ti=A[(today.day-1)%12],mi=A[MT[mo][today.month-1]];
+ var bsl=bsL(yr,mo,dy),esl=eraL(yr);
+ var bc=C[bi],tc=C[ti],mc=C[mi];
+ var dayType=getDayType(bi,ti);
+ var s=(A.indexOf(bi)*12+A.indexOf(ti))%3;
+ var s2=(A.indexOf(bi)*12+A.indexOf(ti))%2;
+
+ function sc(eid,domId,nid,cnid,name){
+  var ch=C[name];
+  document.getElementById(eid).textContent=ch.e;
+  var dom=document.getElementById(domId);dom.textContent=ch.d;dom.style.background=ch.bg;dom.style.color=ch.c;
+  document.getElementById(nid).textContent=name;
+  document.getElementById(cnid).textContent=ch.cn;
+ }
+ sc('be','b-domain','bn','bcn',bi);sc('te','t-domain','tn','tcn',ti);sc('me','m-domain','mn','mcn',mi);
+
+ document.getElementById('chips').innerHTML='<span class="chip '+bsl[1]+'">'+bsl[0]+'生まれ</span><span class="chip '+esl[1]+'">'+esl[0]+'時代</span><span class="chip winter">冬の周期（2016〜2033）</span>';
+
+ var banner=document.getElementById('day-banner');
+ var dgHtml='',tpText='';
+
+ if(dayType==='great'){
+  banner.className='day-banner great';
+  document.getElementById('db-icon').textContent='✨';
+  document.getElementById('db-tag').textContent='◎ 三位一体の大吉日 — 宇宙があなたに全力を注ぐ';
+  document.getElementById('db-title').textContent=GREAT_TITLES[bi];
+  document.getElementById('db-body').textContent=GREAT_BODIES[bi];
+  dgHtml=DM_GOOD[ti].map(function(d){return'<div class="di"><div class="di-l">'+d.i+' '+d.l+'</div><div class="di-min-label">△ 整えないと（最小限の恵み）</div><div class="di-min">'+d.min+'</div><div class="di-min-sub">→ '+d.min_sub+'</div><div class="di-arr">チューニングすると</div><div class="di-max-label">✦ 整えると（最大限の恵み）</div><div class="di-max">'+d.max+'</div><div class="di-max-sub">→ '+d.max_sub+'</div></div>';}).join('');
+  tpText='この大吉日の恵みを最小限で終わらせるな。チューニング動画を見ることで恵みが何倍にもなる。';
+ } else if(dayType==='good'){
+  banner.className='day-banner good';
+  document.getElementById('db-icon').textContent='🌟';
+  document.getElementById('db-tag').textContent='○ 吉日 — 今日の流れはあなたの味方だ';
+  document.getElementById('db-title').textContent=bc.cn+'×'+tc.cn+' — '+bi+'と'+ti+'の力が重なる吉日';
+  document.getElementById('db-body').textContent=GOOD_BODIES[bi];
+  dgHtml=DM_GOOD[ti].map(function(d){return'<div class="di"><div class="di-l">'+d.i+' '+d.l+'</div><div class="di-min-label">△ 整えないと（最小限の恵み）</div><div class="di-min">'+d.min+'</div><div class="di-min-sub">→ '+d.min_sub+'</div><div class="di-arr">チューニングすると</div><div class="di-max-label">✦ 整えると（最大限の恵み）</div><div class="di-max">'+d.max+'</div><div class="di-max-sub">→ '+d.max_sub+'</div></div>';}).join('');
+  tpText='整えない吉日は半分の恵みで終わる。チューニング動画を見て今日の恵みを最大限に受け取れ。';
+ } else {
+  banner.className='day-banner warn';
+  document.getElementById('db-icon').textContent='⚠';
+  document.getElementById('db-tag').textContent='⚠ 今日の元型霊示 — 整えないと起きること';
+  document.getElementById('db-title').textContent=bc.cn+'×'+tc.cn+' ——'+(WARN_TITLES[bi]?WARN_TITLES[bi][s]:'今日のエネルギーを整えてください');
+  document.getElementById('db-body').textContent=(WARN_BODIES[bi]?WARN_BODIES[bi][s]:'見えている。今日のエネルギーを整えなければ大切なものを失う。まず受け取れ。');
+  var wdm=DM_WARN[ti]||DM_WARN['王様'];
+  dgHtml=wdm.map(function(d){return'<div class="di"><div class="di-l">'+d.i+' '+d.l+'</div><div class="di-bad-label">✗ 整えないと</div><div class="di-bad">'+(s2===0?d.b1:d.b2)+'</div><div class="di-bad-sub">→ '+(s2===0?d.b2:d.b1)+'</div><div class="di-arr">チューニングすると</div><div class="di-good-label">✓ 整えると</div><div class="di-good">'+(s2===0?d.g1:d.g2)+'</div><div class="di-good-sub">→ '+(s2===0?d.g2:d.g1)+'</div></div>';}).join('');
+  tpText=(WARN_CTAS[bi]?WARN_CTAS[bi][s]:'整えなければ今日の力は全て空回りする。チューニング動画を今すぐ見てくれ。');
+ }
+
+ document.getElementById('dg').innerHTML=dgHtml;
+ document.getElementById('tp').textContent=tpText;
+ document.getElementById('yt-ttl').textContent=bi+'×'+ti+'×'+mi+' — 今日のチューニング動画';
+ document.getElementById('yt-a').href=CONFIG.ytUrl;
+ document.getElementById('ln-a').href=CONFIG.lineUrl;
+ res.classList.remove('hidden');
+ setTimeout(function(){res.scrollIntoView({behavior:'smooth'});},100);
+}
+
+function scrollYt(){document.getElementById('yt-a').scrollIntoView({behavior:'smooth'});}
+function mSub(){
+ var v=document.getElementById('mi').value;
+ if(!v||v.indexOf('@')<0){alert('メールアドレスを確認してください');return;}
+ if(CONFIG.mailUrl){window.open(CONFIG.mailUrl+'?email='+encodeURIComponent(v),'_blank');}
+ document.getElementById('mok').style.display='block';
+ document.getElementById('mi').value='';
+}
+function saveAdmin(){
+ var yt=document.getElementById('yt-url').value;
+ var ln=document.getElementById('ln-url').value;
+ var ml=document.getElementById('ml-url').value;
+ if(yt)CONFIG.ytUrl=yt;
+ if(ln)CONFIG.lineUrl=ln;
+ if(ml)CONFIG.mailUrl=ml;
+ if(yt)document.getElementById('yt-a').href=yt;
+ if(ln)document.getElementById('ln-a').href=ln;
+ alert('保存しました。URLが反映されました。');
+}
+</script>
+</body>
+</html>
